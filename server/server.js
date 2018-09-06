@@ -9,6 +9,8 @@ var app = express();
 
 app.use(bodyParser.json());
 
+const port = process.env.PORT || 3000 ;
+
 app.post('/messages',(req, res) => {
     var mes = new Message({
         text : req.body.text,
@@ -22,6 +24,14 @@ app.post('/messages',(req, res) => {
     });
 });
 
-app.listen(3000, () => {
+app.get('/messages',(req,res) => {
+    Message.find().then((messages) => {
+        res.send({messages});
+    },(e) => {
+        res.status(400).send(e);
+    });
+});
+
+app.listen(port, () => {
     console.log('started server');
 });
