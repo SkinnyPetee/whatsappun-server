@@ -1,8 +1,10 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+const _ = require('lodash');
 
 var {mongoose} = require('./db/mongoose');
 var {Message} = require('./models/message');
+var {User} = require('./models/user');
 
 
 var app = express();
@@ -32,6 +34,17 @@ app.get('/messages',(req,res) => {
     });
 });
 
+app.post('/users',(req, res) => {
+    var body = _.pick(req.body,['email','password']);
+    var user = new User(body);
+
+    user.save().then((user) => {
+        res.send(user)
+    },(e) => {
+        res.status(400).send(e);
+    });
+});
+
 app.listen(port, () => {
-    console.log('started server');
+    console.log(`started server on ${port}`);
 });
