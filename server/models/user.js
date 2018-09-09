@@ -38,6 +38,11 @@ var UserSchema = new mongoose.Schema({
                 type : String,
                 required: true
             }
+        }],
+
+        chats : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'chat'
         }]
     
         
@@ -49,7 +54,7 @@ var UserSchema = new mongoose.Schema({
 UserSchema.methods.toJSON = function(){
     var user = this;
     var userObject = user.toObject();
-    return _.pick(userObject,['_id','email']);
+    return _.pick(userObject,['_id','email','chats']);
 
 };
 

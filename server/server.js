@@ -5,6 +5,7 @@ const _ = require('lodash');
 var {mongoose} = require('./db/mongoose');
 var {Message} = require('./models/message');
 var {User} = require('./models/user');
+var {Chat} = require('./models/chat');
 var {authenticate} = require('./middleware/authenticate');
 
 
@@ -29,6 +30,11 @@ app.post('/messages',(req, res) => {
         res.status(400).send(e);
     });
 });
+
+
+
+
+
 
 app.get('/messages',(req,res) => {
     Message.find().then((messages) => {
@@ -79,6 +85,49 @@ app.delete('/users/logout',authenticate ,(req,res) => {
         res.status(400).send();
     })
 });
+
+
+
+
+app.post('/chats',(req, res) => {
+    var chat = new Chat({
+        name : req.body.name,
+        _user1Id : req.body._user1Id,
+        _user2Id : req.body._user2Id
+        
+    });
+    
+    chat.save().then((doc) => {
+        User.findByIdAndUpdate(req.body._user1Id, {
+            $addToSet: { chats : chat._id }
+          }, { 'new': true}, () => {
+              console.log('added user chats id');
+          });
+
+
+          User.findByIdAndUpdate(req.body._user2Id, {
+            $addToSet : { chats : chat._id }
+          }, { 'new': true}, () => {
+              console.log('added user chats id');
+          });
+
+
+        res.send(doc);
+    },(e) => {
+        res.status(400).send(e);
+    });
+
+    
+
+
+});
+
+
+
+
+
+
+
 
 app.listen(port, () => {
     console.log(`started server on ${port}`);
